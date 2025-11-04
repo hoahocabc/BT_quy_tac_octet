@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang='vi'>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài tâp hóa học ABC</title>
+
+  <!-- Sử dụng Google Fonts cho giao diện hiện đại -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$']] },
+      chtml: { scale: 0.9 },
+      svg: { fontCache: 'global' }
+    };
+    function drop(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text");
+      var draggable = document.getElementById(data);
+      var dropZone = ev.target;
+      while (dropZone && !dropZone.classList.contains("dropzone") && dropZone.tagName !== "BODY") {
+        dropZone = dropZone.parentNode;
+      }
+      if (!dropZone) return;
+      var label = dropZone.querySelector(".drop-label");
+      if (label) {
+         if (label.nextSibling) {
+           dropZone.insertBefore(draggable, label.nextSibling);
+         } else {
+           dropZone.appendChild(draggable);
+         }
+      } else {
+         dropZone.appendChild(draggable);
+      }
+    }
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+  </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .top-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+    .score-box {
+      background: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 1.1em;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.8em;
+      color: #333;
+    }
+    .header h2 {
+      margin: 10px 0 0;
+      font-size: 1.2em;
+      color: #777;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .section h2 {
+      font-size: 1.4em;
+      margin-bottom: 20px;
+      color: #4285f4;
+    }
+    .question {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #f2f2f2;
+    }
+    .question p {
+      margin: 0 0 10px 0;
+    }
+    .option {
+      margin: 5px 0;
+    }
+    .explanation {
+      margin-top: 10px;
+    }
+    button {
+      background: #4285f4;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    button:hover { background: #307cf1; }
+    /* Drag and drop */
+    .drag-drop-container {
+      display: flex;
+      gap: 10px;
+    }
+    .drag-column, .drop-column {
+      flex: 1;
+      background: #fff;
+      border: 1px dashed #ccc;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .draggable-item {
+      background: #e8f0fe;
+      border: 1px solid #c6dafc;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      cursor: move;
+      text-align: center;
+    }
+    .dropzone {
+      min-height: 50px;
+      border: 1px dashed #aaa;
+      margin: 5px 0;
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+    }
+    .drop-label {
+      font-weight: bold;
+      color: #555;
+    }
+    /* Updated CSS for blanks in Part IV */
+    .blank-container {
+      display: inline;
+    }
+    .blank-container input.auto-expand, .blank-container span {
+      white-space: normal;
+      min-width: 60px;
+      height: 25px;
+      font-size: 18px;
+      vertical-align: baseline;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+    }
+    mjx-container[jax="CHTML"][display="true"] {
+      margin-top: 0 !important;
+      margin-bottom: -1.5em !important;
+    }
+    /* Media query cho smartphone */
+    @media only screen and (max-width: 600px) {
+      body { padding: 10px; font-size: 16px; }
+      .container { padding: 15px; }
+      .header h1 { font-size: 1.8em; }
+      .header h2 { font-size: 1.2em; }
+      .score-box { font-size: 1em; padding: 8px 12px; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class='container'>
+    <div class='top-row'><div class='score-box' id='scoreDisplay'>Tổng số điểm:</div></div>
+    <div class='header'><h1>BÀI TẬP QUY TẮC OCTET</h1><h2>(HÓA HỌC ABC)</h2></div>
+<div class='section' id='part1' data-parttype='1'>
+<h2>Phần 1: Trắc nghiệm nhiều lựa chọn (có một phương án đúng)</h2>
+<div class='question' id='part1_q1'>
+<p><strong>Câu 1:</strong><br><br>Theo quy tắc octet, trong quá trình hình thành liên kết hóa học, nguyên tử của các nguyên tố nhóm A có xu hướng đạt được cấu hình electron bền vững với số electron ở lớp vỏ ngoài cùng là bao nhiêu? </p>
+<div class='option'><label><input type='radio' name='part1_q1' value='A'> <strong>A.</strong>  2. </label></div>
+<div class='option'><label><input type='radio' name='part1_q1' value='B'> <strong>B.</strong>  4. </label></div>
+<div class='option'><label><input type='radio' name='part1_q1' value='C'> <strong>C.</strong>  6. </label></div>
+<div class='option'><label><input type='radio' name='part1_q1' value='D'> <strong>D.</strong>  8.</label></div>
+<div class='explanation' id='part1_q1_result' data-answer='D' data-solution='%20%3Cbr%3EC%C3%A1c%20nguy%C3%AAn%20t%E1%BB%AD%20nh%C3%B3m%20A%20c%C3%B3%20xu%20h%C6%B0%E1%BB%9Bng%20t%E1%BA%A1o%20th%C3%A0nh%20l%E1%BB%9Bp%20v%E1%BB%8F%20ngo%C3%A0i%20c%C3%B9ng%20c%C3%B3%208%20electron%20%28octet%29%2C%20ho%E1%BA%B7c%202e%20gi%E1%BB%91ng%20He.'></div>
+</div>
+<div class='question' id='part1_q2'>
+<p><strong>Câu 2:</strong><br><br>Nguyên tử nào sau đây có xu hướng đạt cấu hình electron bền vững với 2 electron ở lớp vỏ ngoài cùng (giống khí hiếm Helium) khi tham gia liên kết hóa học? </p>
+<div class='option'><label><input type='radio' name='part1_q2' value='A'> <strong>A.</strong>  Fluorine. </label></div>
+<div class='option'><label><input type='radio' name='part1_q2' value='B'> <strong>B.</strong>  Oxygen. </label></div>
+<div class='option'><label><input type='radio' name='part1_q2' value='C'> <strong>C.</strong>  Hydrogen. </label></div>
+<div class='option'><label><input type='radio' name='part1_q2' value='D'> <strong>D.</strong>  Chlorine. </label></div>
+<div class='explanation' id='part1_q2_result' data-answer='C' data-solution='%20%3Cbr%3EHydrogen%20l%C3%A0%20nguy%C3%AAn%20t%E1%BB%AD%20c%C3%B3%20xu%20h%C6%B0%E1%BB%9Bng%20%C4%91%E1%BA%A1t%202%20electron%20%28gi%E1%BB%91ng%20Helium%29.'></div>
+</div>
+<div class='question' id='part1_q3'>
+<p><strong>Câu 3:</strong><br><br>Để đạt cấu hình electron bền vững theo quy tắc octet, nguyên tử Sodium (Na có 1 electron hóa trị, thuộc nhóm IA) sẽ có xu hướng biến đổi nào sau đây? </p>
+<div class='option'><label><input type='radio' name='part1_q3' value='A'> <strong>A.</strong>  Nhận thêm 1 electron. </label></div>
+<div class='option'><label><input type='radio' name='part1_q3' value='B'> <strong>B.</strong>  Nhường 2 electron. </label></div>
+<div class='option'><label><input type='radio' name='part1_q3' value='C'> <strong>C.</strong>  Nhận thêm 7 electron. </label></div>
+<div class='option'><label><input type='radio' name='part1_q3' value='D'> <strong>D.</strong>  Nhường 1 electron. </label></div>
+<div class='explanation' id='part1_q3_result' data-answer='D' data-solution='%20%3Cbr%3ENguy%C3%AAn%20t%E1%BB%AD%20Sodium%20nh%C6%B0%E1%BB%9Dng%20%C4%91i%201%20electron%20%C4%91%E1%BB%83%20%C4%91%E1%BA%A1t%208%20electron%20%E1%BB%9F%20l%E1%BB%9Bp%20ngo%C3%A0i%20c%C3%B9ng.'></div>
+</div>
+<div class='question' id='part1_q4'>
+<p><strong>Câu 4:</strong><br><br>Trong quá trình hình thành phân tử Chlorine (Cl<sub>2</sub>), mỗi nguyên tử Chlorine đạt cấu hình octet bằng cách nào? </p>
+<div class='option'><label><input type='radio' name='part1_q4' value='A'> <strong>A.</strong>  Nhường 1 electron cho nguyên tử Cl kia.</label></div>
+<div class='option'><label><input type='radio' name='part1_q4' value='B'> <strong>B.</strong>  Nhận 1 electron từ nguyên tử Cl kia. </label></div>
+<div class='option'><label><input type='radio' name='part1_q4' value='C'> <strong>C.</strong>  Góp chung 2 cặp electron. </label></div>
+<div class='option'><label><input type='radio' name='part1_q4' value='D'> <strong>D.</strong>  Góp chung 1 electron hóa trị với nguyên tử Cl còn lại. </label></div>
+<div class='explanation' id='part1_q4_result' data-answer='D' data-solution='%20%3Cbr%3ENguy%C3%AAn%20t%E1%BB%AD%20Chlorine%20c%E1%BA%A7n%201%20electron%20%C4%91%E1%BB%83%20%C4%91%E1%BA%A1t%208%2C%20n%C3%AAn%20ch%C3%BAng%20g%C3%B3p%20chung%201%20electron%20%281%20c%E1%BA%B7p%20electron%20chung%29%20%C4%91%E1%BB%83%20t%E1%BA%A1o%20th%C3%A0nh%20ph%C3%A2n%20t%E1%BB%AD%20Cl%3Csub%3E2%3C%2Fsub%3E.'></div>
+</div>
+<div class='question' id='part1_q5'>
+<p><strong>Câu 5:</strong><br><br>Mục đích cơ bản nhất của việc các nguyên tử kết hợp với nhau tạo thành liên kết hóa học dựa trên quy tắc octet là gì? </p>
+<div class='option'><label><input type='radio' name='part1_q5' value='A'> <strong>A.</strong>  Tăng kích thước nguyên tử. </label></div>
+<div class='option'><label><input type='radio' name='part1_q5' value='B'> <strong>B.</strong>  Tạo ra phân tử có khối lượng lớn. </label></div>
+<div class='option'><label><input type='radio' name='part1_q5' value='C'> <strong>C.</strong>  Đạt cấu hình electron bền vững của khí hiếm. </label></div>
+<div class='option'><label><input type='radio' name='part1_q5' value='D'> <strong>D.</strong>  Tạo ra liên kết ion.</label></div>
+<div class='explanation' id='part1_q5_result' data-answer='C' data-solution='%20%3Cbr%3EC%C3%A1c%20nguy%C3%AAn%20t%E1%BB%AD%20c%C3%B3%20xu%20h%C6%B0%E1%BB%9Bng%20%C4%91%E1%BA%A1t%20c%E1%BA%A5u%20h%C3%ACnh%20electron%20b%E1%BB%81n%20v%E1%BB%AFng%20c%E1%BB%A7a%20nguy%C3%AAn%20t%E1%BB%AD%20kh%C3%AD%20hi%E1%BA%BFm.%3Cbr%3E'></div>
+</div>
+</div>
+<div class='section' id='part2' data-parttype='2'>
+<h2>Phần 2: Trắc nghiệm nhiều lựa chọn (có thể có nhiều đáp án đúng)</h2>
+<div class='question' id='part2_q1'>
+<p><strong>Câu 1:</strong><br><br>Chọn các phát biểu đúng cho phát biểu sau về quy tắc octet:</p>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='A'> <strong>A.</strong>  Quy tắc octet được đề xuất bởi nhà hóa học người Mỹ Lewis.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='B'> <strong>B.</strong>  Khi nguyên tử Fluorine (F) nhận 1 electron, ion F<sup>-</sup> đạt cấu hình electron bền vững của khí hiếm Neon.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='C'> <strong>C.</strong>  Quy tắc octet (hay bát tử) là một quy tắc luôn luôn đúng trong mọi trường hợp liên kết hóa học.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='D'> <strong>D.</strong>  Trong phân tử H<sub>2</sub>O, nguyên tử Hydrogen và Oxygen đều đạt cấu hình bền vững theo quy tắc octet.</label></div>
+<div class='explanation' id='part2_q1_result' data-answer='A,B,D' data-solution=''></div>
+</div>
+<div class='question' id='part2_q2'>
+<p><strong>Câu 2:</strong><br><br>Chọn các phát biểu đúng trong các phát biểu dưới đây:</p>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='A'> <strong>A.</strong>  Các nguyên tử phi kim thường có xu hướng nhường electron để đạt cấu hình khí hiếm gần nhất.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='B'> <strong>B.</strong>  Quy tắc octet chỉ áp dụng để giải thích sự hình thành liên kết cộng hóa trị, không áp dụng cho liên kết ion.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='C'> <strong>C.</strong>  Nguyên tử thuộc nhóm VIIA (như F, Cl…) có 7 electron hóa trị nên có xu hướng nhận thêm 1 electron để đạt 8 electron lớp ngoài cùng.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='D'> <strong>D.</strong>  Sự hình thành liên kết hóa học luôn dẫn đến sự giảm năng lượng của hệ.</label></div>
+<div class='explanation' id='part2_q2_result' data-answer='C,D' data-solution=''></div>
+</div>
+<div class='question' id='part2_q3'>
+<p><strong>Câu 3:</strong><br><br>Chọn các phát biểu đúng trong các phát biểu dưới đây:</p>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='A'> <strong>A.</strong>  Ion được tạo thành khi nguyên tử nhường hoặc nhận electron luôn là hạt mang điện tích âm.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='B'> <strong>B.</strong>  Trong quá trình hình thành liên kết, nguyên tử Chlorine (Cl) đạt cấu hình bền vững bằng cách nhận 1 electron từ nguyên tử Sodium (Na).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='C'> <strong>C.</strong>  Các phân tử như BH<sub>3</sub> hoặc SF<sub>6</sub> là ví dụ về các trường hợp ngoại lệ không tuân theo quy tắc octet.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='D'> <strong>D.</strong>  Các nguyên tử ở nhóm VIIIA (khí hiếm) đã có cấu hình bền vững nên không có xu hướng tham gia liên kết hóa học.</label></div>
+<div class='explanation' id='part2_q3_result' data-answer='B,C,D' data-solution=''></div>
+</div>
+<div class='question' id='part2_q4'>
+<p><strong>Câu 4:</strong><br><br>Chọn các phát biểu đúng trong các phát biểu dưới đây:</p>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='A'> <strong>A.</strong>  Khi nguyên tử nhường electron, ion tạo thành được gọi là ion dương (cation).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='B'> <strong>B.</strong>  Trong phân tử N<sub>2</sub>, hai nguyên tử Nitrogen đã góp chung tổng cộng 6 electron để đạt octet.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='C'> <strong>C.</strong>  Quy tắc octet cũng được sử dụng để giải thích sự hình thành phân tử PCl<sub>5</sub>.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='D'> <strong>D.</strong>  Nguyên tử Sodium (Na) có xu hướng nhường 1 electron để đạt cấu hình 8 electron giống khí hiếm Argon (Ar).</label></div>
+<div class='explanation' id='part2_q4_result' data-answer='A,B' data-solution=''></div>
+</div>
+<div class='question' id='part2_q5'>
+<p><strong>Câu 5:</strong><br><br>Chọn các phát biểu đúng trong các phát biểu dưới đây:<br></p>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='A'> <strong>A.</strong>  Các electron lớp ngoài cùng tham gia vào quá trình hình thành liên kết hóa học được gọi là electron hóa trị.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='B'> <strong>B.</strong>  Quy tắc 18 electron là quy tắc khác, áp dụng cho các nguyên tố nhóm A.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='C'> <strong>C.</strong>  Nguyên tử Oxygen (O) có 6 electron hóa trị, để đạt octet cần nhận thêm 2 electron hoặc góp chung 2 electron.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='D'> <strong>D.</strong>  Liên kết ion hình thành do sự nhường và nhận electron dẫn đến lực hút tĩnh điện giữa các ion mang điện tích trái dấu.</label></div>
+<div class='explanation' id='part2_q5_result' data-answer='A,C,D' data-solution=''></div>
+</div>
+</div>
+<div class='section' id='part3' data-parttype='4'>
+<h2>Phần 3: Trắc nghiệm điền khuyết</h2>
+<div class='question' id='part3_q1'>
+<p><strong>Câu 1:</strong><br><br>Theo quy tắc octet, các nguyên tử có xu hướng nhường, nhận, hoặc góp chung electron hóa trị để đạt cấu hình electron bền vững của khí hiếm, thường là <span class='blank-container'><input type='text' id='part3_q1_blank1' data-answer=' 8' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> electron ở lớp vỏ ngoài cùng.</p>
+<div class='explanation' id='part3_q1_result' data-solution=''></div>
+</div>
+<div class='question' id='part3_q2'>
+<p><strong>Câu 2:</strong><br><br>Liên kết hóa học là sự kết hợp giữa các nguyên tử tạo thành phân tử hay tinh thể hay ion, nhằm đạt được trạng thái <span class='blank-container'><input type='text' id='part3_q2_blank1' data-answer=' bền vững|| bền' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> hơn.</p>
+<div class='explanation' id='part3_q2_result' data-solution=''></div>
+</div>
+<div class='question' id='part3_q3'>
+<p><strong>Câu 3:</strong><br><br>Trong quá trình hình thành phân tử NaF, nguyên tử Sodium đã <span class='blank-container'><input type='text' id='part3_q3_blank1' data-answer=' nhường|| cho' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> 1 electron cho nguyên tử Fluorine.</p>
+<div class='explanation' id='part3_q3_result' data-solution=''></div>
+</div>
+<div class='question' id='part3_q4'>
+<p><strong>Câu 4:</strong><br><br>Quy tắc octet chủ yếu được áp dụng cho các nguyên tử thuộc các nguyên tố nhóm <span class='blank-container'><input type='text' id='part3_q4_blank1' data-answer=' A' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span>.</p>
+<div class='explanation' id='part3_q4_result' data-solution=''></div>
+</div>
+<div class='question' id='part3_q5'>
+<p><strong>Câu 5:</strong><br><br>Ion dương được hình thành khi nguyên tử <span class='blank-container'><input type='text' id='part3_q5_blank1' data-answer=' nhường|| cho' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> electron hóa trị; ion âm được hình thành khi nguyên tử <span class='blank-container'><input type='text' id='part3_q5_blank2' data-answer=' nhận|| thu' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> electron hóa trị.</p>
+<div class='explanation' id='part3_q5_result' data-solution=''></div>
+</div>
+</div>
+<div class='section' id='part4' data-parttype='5'>
+<h2>Phần 4: Trắc nghiệm kéo - thả</h2>
+<div class='question' id='part4_q1'>
+<p class='question-content'><strong>Câu 1:</strong><br><br>Hãy ghép các Nguyên tố/Hợp chất (ở Cột I) với Xu hướng đạt octet hoặc Cấu trúc liên quan (ở Cột II) sao cho phù hợp:</p>
+<div class='drag-drop-container'>
+<div class='drag-column'>
+<div class='draggable-item' data-label='3' draggable='true' ondragstart='drag(event)' id='part4_q1_drag_0'>Phân tử Nitrogen (N<sub>2</sub>)</div>
+<div class='draggable-item' data-label='5' draggable='true' ondragstart='drag(event)' id='part4_q1_drag_1'>Phân tử BH<sub>3</sub></div>
+<div class='draggable-item' data-label='4' draggable='true' ondragstart='drag(event)' id='part4_q1_drag_2'>Nguyên tử Hydrogen (H)</div>
+<div class='draggable-item' data-label='2' draggable='true' ondragstart='drag(event)' id='part4_q1_drag_3'>Nguyên tử Chlorine (Cl, Nhóm VIIA)</div>
+<div class='draggable-item' data-label='1' draggable='true' ondragstart='drag(event)' id='part4_q1_drag_4'>Nguyên tử Potassium (K, Nhóm IA)</div>
+</div>
+<div class='drop-column'>
+<div class='dropzone-wrapper'>
+<div class='dropzone' data-label='A' id='part4_q1_drop_0' data-expected='2' ondragover='allowDrop(event)' ondrop='drop(event)'>
+<div class='drop-label'>Nhận 1 electron để trở thành ion mang điện tích âm</div>
+</div>
+</div>
+<div class='dropzone-wrapper'>
+<div class='dropzone' data-label='B' id='part4_q1_drop_1' data-expected='4' ondragover='allowDrop(event)' ondrop='drop(event)'>
+<div class='drop-label'>Đạt cấu hình bền vững với 2 electron</div>
+</div>
+</div>
+<div class='dropzone-wrapper'>
+<div class='dropzone' data-label='C' id='part4_q1_drop_2' data-expected='1' ondragover='allowDrop(event)' ondrop='drop(event)'>
+<div class='drop-label'>Nhường 1 electron để trở thành ion mang điện tích dương</div>
+</div>
+</div>
+<div class='dropzone-wrapper'>
+<div class='dropzone' data-label='D' id='part4_q1_drop_3' data-expected='3' ondragover='allowDrop(event)' ondrop='drop(event)'>
+<div class='drop-label'>Góp chung 3 cặp electron (6 electron)</div>
+</div>
+</div>
+<div class='dropzone-wrapper'>
+<div class='dropzone' data-label='E' id='part4_q1_drop_4' data-expected='5' ondragover='allowDrop(event)' ondrop='drop(event)'>
+<div class='drop-label'>Phân tử được nhận thấy không tuân theo quy tắc octet</div>
+</div>
+</div>
+</div>
+</div>
+<div class='explanation' id='part4_q1_result' data-answer-pairs='Nguyên tử Potassium (K, Nhóm IA) -- Nhường 1 electron để trở thành ion mang điện tích dương || Nguyên tử Chlorine (Cl, Nhóm VIIA) -- Nhận 1 electron để trở thành ion mang điện tích âm || Phân tử Nitrogen (N<sub>2</sub>) -- Góp chung 3 cặp electron (6 electron) || Nguyên tử Hydrogen (H) -- Đạt cấu hình bền vững với 2 electron || Phân tử BH<sub>3</sub> -- Phân tử được nhận thấy không tuân theo quy tắc octet' data-solution=''></div>
+</div>
+</div>
+
+    <div style='text-align:center; margin-top:30px;'>
+      <button id='submitBtn' onclick='gradeQuiz();'>Nộp bài</button>
+    </div>
+    <script>
+      function gradeQuiz() {
+         let score = 0, total = 0;
+         document.querySelectorAll('.section').forEach(function(section) {
+           let partType = section.getAttribute('data-parttype');
+           section.querySelectorAll('.question').forEach(function(q) {
+             total++;
+             let qid = q.id;
+             let feedback = "";
+             if (partType === "1") {
+               let selected = q.querySelector('input[name="' + qid + '"]:checked');
+               let correct = q.querySelector('.explanation').getAttribute('data-answer');
+               if (!selected) {
+                 feedback = '<span style="color:red;"><strong>Bạn chưa trả lời. Đáp án đúng: ' + correct + '</strong></span>';
+               } else if (selected.value === correct) {
+                 score++;
+                 feedback = '<span style="color:green;"><strong>Đúng (' + correct + ')</strong></span>';
+               } else {
+                 feedback = '<span style="color:red;"><strong>Sai. Đáp án đúng: ' + correct + '</strong></span>';
+               }
+             } else if (partType === "2") {
+               let selectedList = q.querySelectorAll('input[name="' + qid + '"]:checked');
+               if (selectedList.length === 0) {
+                 let correct = q.querySelector('.explanation').getAttribute('data-answer');
+                 feedback = '<span style="color:red;"><strong>Bạn chưa trả lời. Đáp án đúng: ' + correct + '</strong></span>';
+               } else {
+                 let userAnswers = [];
+                 selectedList.forEach(function(el) { userAnswers.push(el.value); });
+                 let correct = q.querySelector('.explanation').getAttribute('data-answer').split(',');
+                 userAnswers.sort(); correct.sort();
+                 if (userAnswers.join() === correct.join()) {
+                   score++;
+                   feedback = '<span style="color:green;"><strong>Đúng (' + correct.join(',') + ')</strong></span>';
+                 } else {
+                   feedback = '<span style="color:red;"><strong>Sai. Đáp án đúng: ' + correct.join(',') + '</strong></span>';
+                 }
+               }
+             } else if (partType === "3") {
+               let inputElem = document.getElementById(qid + '_input');
+               let userInput = inputElem.value.trim();
+               let correctData = q.querySelector('.explanation').getAttribute('data-answer');
+               let accepted = correctData.split('||').map(s => s.trim());
+               if (!userInput) {
+                 feedback = '<span style="color:red;"><strong>Bạn chưa trả lời. Đáp án đúng: ' + accepted.join(' hoặc ') + '</strong></span>';
+               } else {
+                 if (accepted.includes(userInput)) {
+                   score++;
+                   feedback = '<span style="color:green;"><strong>Đúng</strong></span>';
+                   inputElem.style.color = 'green';
+                 } else {
+                   feedback = '<span style="color:red;"><strong>Sai. Đáp án đúng: ' + accepted.join(' hoặc ') + '</strong></span>';
+                   inputElem.style.color = 'red';
+                 }
+                 inputElem.style.fontWeight = 'bold';
+                 inputElem.disabled = true;
+               }
+             } else if (partType === "4") {
+               let inputs = q.querySelectorAll('input.auto-expand');
+               let blankResults = [];
+               inputs.forEach(function(inp, index) {
+                 let accepted = inp.getAttribute('data-answer').split('||').map(s => s.trim());
+                 let userAnswer = inp.value.trim();
+                 if (userAnswer !== "") {
+                   if (accepted.includes(userAnswer)) {
+                     blankResults.push({blank: index+1, correct: true, answer: userAnswer, accepted: accepted});
+                   } else {
+                     blankResults.push({blank: index+1, correct: false, answer: userAnswer, accepted: accepted});
+                   }
+                 } else {
+                   blankResults.push({blank: index+1, answered: false, accepted: accepted});
+                 }
+               });
+               inputs.forEach(function(inp, index) {
+                 let res = blankResults[index];
+                 if (res.answered === false) { }
+                 else {
+                   let span = document.createElement('span');
+                   span.style.fontWeight = 'bold';
+                   if (res.correct) {
+                     span.style.color = 'green';
+                     span.textContent = res.answer;
+                   } else {
+                     span.style.color = 'red';
+                     span.textContent = res.answer;
+                   }
+                   inp.parentNode.replaceChild(span, inp);
+                 }
+               });
+               let wrongBlanks = [];
+               let unansweredBlanks = [];
+               blankResults.forEach(function(r) {
+                 if (r.answered === false) { unansweredBlanks.push(r.blank); }
+                 else if (!r.correct) { wrongBlanks.push(r.blank); }
+               });
+               if (wrongBlanks.length === 0 && unansweredBlanks.length === 0) {
+                 feedback = '<span style="color:green; font-weight:bold;">Đúng</span>';
+                 score++;
+               } else {
+                 let answerList = "";
+                 blankResults.forEach(function(r) {
+                   answerList += r.blank + ') ' + r.accepted.join(', hoặc ') + '<br>';
+                 });
+                 feedback = '<span style="color:red; font-weight:bold;">Sai.';
+                 if (wrongBlanks.length > 0) {
+                   feedback += ' Bạn trả lời sai vị trí ' + wrongBlanks.join(', ') + '.';
+                 }
+                 if (unansweredBlanks.length > 0) {
+                   feedback += ' Bạn chưa trả lời vị trí ' + unansweredBlanks.join(', ') + '.';
+                 }
+                 feedback += '<br>Đáp án đúng là:<br>' + answerList + '</span>';
+               }
+             } else if (partType === "5") {
+               let correctForQuestion = true;
+               q.querySelectorAll('.dropzone').forEach(function(dropZone) {
+                 let expected = dropZone.getAttribute('data-expected').trim();
+                 let userItems = Array.from(dropZone.querySelectorAll('.draggable-item')).map(e => e.getAttribute('data-label')).sort();
+                 let expectedItems = expected ? expected.split(',').map(s => s.trim()).sort() : [];
+                 if (JSON.stringify(userItems) !== JSON.stringify(expectedItems)) {
+                   correctForQuestion = false;
+                 }
+               });
+               if (correctForQuestion) {
+                 feedback = '<span style="color:green; font-weight:bold;">Đúng</span>';
+                 score++;
+               } else {
+                 let answerPairs = q.querySelector('.explanation').getAttribute('data-answer-pairs');
+                 feedback = '<span style="color:red; font-weight:bold;">Sai. Đáp án đúng là:<br>' + answerPairs.replace(/ \|\| /g, "<br>") + '</span>';
+               }
+             }
+             let expl = q.querySelector('.explanation');
+             expl.innerHTML = feedback;
+             let encodedSolution = expl.getAttribute('data-solution');
+             let solution = encodedSolution ? decodeURIComponent(encodedSolution) : "";
+             let cleanedSolution = solution.replace(/<br\s*\/?>/gi, '').trim();
+             if (cleanedSolution !== "") {
+                 expl.innerHTML += '<div style="margin-top:10px;"><strong>Lời giải:</strong></div><div>' + solution + '</div>';
+             }
+             expl.style.display = "block";
+           });
+         });
+         document.getElementById('scoreDisplay').innerHTML = 'Tổng số điểm: ' + score + ' / ' + total;
+         document.querySelectorAll('input, select').forEach(function(inp) { inp.disabled = true; });
+         let sb = document.getElementById('submitBtn'); if(sb) sb.disabled = true;
+         MathJax.typesetPromise();
+      }
+    </script>
+  </div>
+</body>
+</html>
